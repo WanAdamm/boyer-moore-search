@@ -5,18 +5,17 @@
 
 // this program is using boyer moore algorithm to match find a pattern within a given string.
 
-bool boyerMoore(const std::string &text, const std::string &pattern);
+void boyerMoore(const std::string &text, const std::string &pattern);
 
 int main()
 {
-    std::string text = "ABAAABCD";
-    std::string pattern = "AAA";
+    std::string text = "AACABABACBA";
+    std::string pattern = "BABA";
 
-    bool result = boyerMoore(text, pattern);
-    std::cout << result << std::endl;
+    boyerMoore(text, pattern);
 }
 
-void badCharHeuristic(const std::string &text, int *badchar) // takes in the text and an array of all the  character to create a lookup table of the last occurence of the character
+void badCharHeuristic(const std::string &pattern, int *badchar) // takes in the text and an array of all the  character to create a lookup table of the last occurence of the character
 {
     int i;
 
@@ -25,9 +24,9 @@ void badCharHeuristic(const std::string &text, int *badchar) // takes in the tex
         badchar[i] = -1; // initialize all as -1 to indicate that theres no occurence of the character
     }
 
-    for (i = 0; i < text.length(); i++) // process the text to find the location of all the last occurrece of the character
+    for (i = 0; i < pattern.length(); i++) // process the text to find the location of all the last occurrece of the character
     {
-        badchar[(int)text[i]] = i;
+        badchar[(int)pattern[i]] = i;
     }
 }
 
@@ -81,14 +80,14 @@ void goodSuffixHeuristic(const std::string &pattern, int patternLength, std::vec
         }
 
         // Correction: `if (rightmostBorderPosition == currentPatternIndex)` (not assignment `=`)
-        if (rightmostBorderPosition == currentPatternIndex)
+        if (i == rightmostBorderPosition)
         {
             rightmostBorderPosition = borderPosition[rightmostBorderPosition];
         }
     }
 }
 
-bool boyerMoore(const std::string &text, const std::string &pattern)
+void boyerMoore(const std::string &text, const std::string &pattern)
 {
     int textLength = text.size();
     int patternLength = pattern.size();
@@ -99,7 +98,7 @@ bool boyerMoore(const std::string &text, const std::string &pattern)
 
     int badchar[NO_OF_CHARS]; // initializing the lookup table for bad character rule
 
-    badCharHeuristic(text, badchar); // filling in the lookup table for bad character rule
+    badCharHeuristic(pattern, badchar); // filling in the lookup table for bad character rule
 
     int shift = 0; // used to shift n steps after using the bad character and good suffix rule.
 
@@ -119,15 +118,13 @@ bool boyerMoore(const std::string &text, const std::string &pattern)
             // shift the pattern so that the next character in text aligns with the last occurence of it in pattern
             // The condition that the shift + pattern length must be less than text length is necessary for the case when pattern  occurs at end of text
             shift += (shift + patternLength < textLength) ? patternLength - badchar[text[shift + patternLength]] : 1;
-            return true;
         }
         else
         {
             // shift the pattern so that the next character in text aligns with the last occurence of it in pattern
             // The max function is used to make sure that we get a positive shift
+            std::cout << "good suffix: " << goodSuffixShiftTable[currentPatternIndex+1] << "   " << "bad character: " << currentPatternIndex - badchar[text[shift + currentPatternIndex]] << std::endl;
             shift += std::max(1, std::max(goodSuffixShiftTable[currentPatternIndex+1] ,currentPatternIndex - badchar[text[shift + currentPatternIndex]]));
         }
     }
-
-    return false;
 }
