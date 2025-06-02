@@ -9,8 +9,8 @@ void boyerMoore(const std::string &text, const std::string &pattern);
 
 int main()
 {
-    std::string text = "AACABABACBA";
-    std::string pattern = "BABA";
+    std::string text = "string matching is an essential problem in computer science. Many modern applications rely on efficient string matching techniques to search, analyze, and process text data. For instance, string matching is used in DNA sequence analysis, in search engines, and in detecting duplicate content. The string matching process compares a pattern with parts of a larger text to find where, if anywhere, the pattern occurs. Different string matching algorithms approach the problem in different ways, aiming to reduce the time and effort needed to find a match within a string of text.";
+    std::string pattern = "string";
 
     boyerMoore(text, pattern);
 }
@@ -47,7 +47,7 @@ void goodSuffixHeuristic(const std::string &pattern, int patternLength, std::vec
     while (currentPatternIndex > 0)
     {
         // Look for a border match between pattern[0..i-1] and a suffix pattern[j..m-1]
-        while (rightmostBorderPosition <= patternLength && 
+        while (rightmostBorderPosition <= patternLength &&
                pattern[currentPatternIndex - 1] != pattern[rightmostBorderPosition - 1])
         {
             // If no match and no value already set in the shift table, compute the shift
@@ -91,6 +91,7 @@ void boyerMoore(const std::string &text, const std::string &pattern)
 {
     int textLength = text.size();
     int patternLength = pattern.size();
+    int occurence = 0; // keep track of the occurence of the pattern
 
     std::vector<int> goodSuffixShiftTable(patternLength + 1);
 
@@ -114,17 +115,19 @@ void boyerMoore(const std::string &text, const std::string &pattern)
         if (currentPatternIndex < 0)
         {
             std::cout << "pattern occur at shift = " << shift << std::endl;
+            occurence++; // increase the occurence counter
 
-            // shift the pattern so that the next character in text aligns with the last occurence of it in pattern
-            // The condition that the shift + pattern length must be less than text length is necessary for the case when pattern  occurs at end of text
-            shift += (shift + patternLength < textLength) ? patternLength - badchar[text[shift + patternLength]] : 1;
+            // shifting after a full match
+            shift += goodSuffixShiftTable[0];
         }
         else
         {
             // shift the pattern so that the next character in text aligns with the last occurence of it in pattern
             // The max function is used to make sure that we get a positive shift
-            std::cout << "good suffix: " << goodSuffixShiftTable[currentPatternIndex+1] << "   " << "bad character: " << currentPatternIndex - badchar[text[shift + currentPatternIndex]] << std::endl;
-            shift += std::max(1, std::max(goodSuffixShiftTable[currentPatternIndex+1] ,currentPatternIndex - badchar[text[shift + currentPatternIndex]]));
+            std::cout << "good suffix: " << goodSuffixShiftTable[currentPatternIndex + 1] << "   " << "bad character: " << currentPatternIndex - badchar[text[shift + currentPatternIndex]] << std::endl;
+            shift += std::max(1, std::max(goodSuffixShiftTable[currentPatternIndex + 1], currentPatternIndex - badchar[text[shift + currentPatternIndex]]));
         }
     }
+
+    std::cout << std::endl << pattern << ":" << occurence << std::endl; 
 }
