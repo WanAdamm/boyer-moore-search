@@ -7,10 +7,21 @@
 
 void boyerMoore(const std::string &text, const std::string &pattern);
 
+// this only work for pattern containing lowercase and uppercase letter
+
 int main()
 {
-    std::string text = "string matching is an essential problem in computer science. Many modern applications rely on efficient string matching techniques to search, analyze, and process text data. For instance, string matching is used in DNA sequence analysis, in search engines, and in detecting duplicate content. The string matching process compares a pattern with parts of a larger text to find where, if anywhere, the pattern occurs. Different string matching algorithms approach the problem in different ways, aiming to reduce the time and effort needed to find a match within a string of text.";
-    std::string pattern = "string";
+    //std::string text = "string matching is an essential problem in computer science. Many modern applications rely on efficient string matching techniques to search, analyze, and process text data. For instance, string matching is used in DNA sequence analysis, in search engines, and in detecting duplicate content. The string matching process compares a pattern with parts of a larger text to find where, if anywhere, the pattern occurs. Different string matching algorithms approach the problem in different ways, aiming to reduce the time and effort needed to find a match within a string of text.";
+    //std::string pattern = "match within a string";
+
+    std::string text;
+    std::string pattern;
+
+    std::cout << "Enter Text: " << std::endl;
+    std::getline(std::cin, text);
+
+    std::cout << "Enter Pattern: " << std:: endl;
+    std::getline(std::cin, pattern);
 
     boyerMoore(text, pattern);
 }
@@ -79,7 +90,6 @@ void goodSuffixHeuristic(const std::string &pattern, int patternLength, std::vec
             goodSuffixShiftTable[i] = rightmostBorderPosition;
         }
 
-        // Correction: `if (rightmostBorderPosition == currentPatternIndex)` (not assignment `=`)
         if (i == rightmostBorderPosition)
         {
             rightmostBorderPosition = borderPosition[rightmostBorderPosition];
@@ -118,13 +128,12 @@ void boyerMoore(const std::string &text, const std::string &pattern)
             occurence++; // increase the occurence counter
 
             // shifting after a full match
-            shift += goodSuffixShiftTable[0];
+            shift += goodSuffixShiftTable[0]; //goodSuffixShiftTable[0] stores the optimal shift after a full match is found
         }
         else
         {
             // shift the pattern so that the next character in text aligns with the last occurence of it in pattern
             // The max function is used to make sure that we get a positive shift
-            std::cout << "good suffix: " << goodSuffixShiftTable[currentPatternIndex + 1] << "   " << "bad character: " << currentPatternIndex - badchar[text[shift + currentPatternIndex]] << std::endl;
             shift += std::max(1, std::max(goodSuffixShiftTable[currentPatternIndex + 1], currentPatternIndex - badchar[text[shift + currentPatternIndex]]));
         }
     }
