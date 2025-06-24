@@ -10,8 +10,8 @@ void boyerMoore(const std::string &text, const std::string &pattern);
 
 int main()
 {
-    // std::string text = "string matching is an essential problem in computer science. Many modern applications rely on efficient string matching techniques to search, analyze, and process text data. For instance, string matching is used in DNA sequence analysis, in search engines, and in detecting duplicate content. The string matching process compares a pattern with parts of a larger text to find where, if anywhere, the pattern occurs. Different string matching algorithms approach the problem in different ways, aiming to reduce the time and effort needed to find a match within a string of text.";
-    // std::string pattern = "match within a string";
+    // std::string text = "abcaabaacabcbca";
+    // std::string pattern = "abcbc";
 
     std::string text;
     std::string pattern;
@@ -127,13 +127,22 @@ void boyerMoore(const std::string &text, const std::string &pattern)
 
             // After a full match, shift the pattern using the good suffix rule
             shift += goodSuffixShiftTable[0];
-            std::cout << "Shift by: " << shift << std::endl;
+            std::cout << "Shift to: " << shift << std::endl;
         }
         else
         {
             // Shift the pattern using the maximum of the bad character rule and the good suffix rule
             shift += std::max(1, std::max(goodSuffixShiftTable[currentPatternIndex + 1], currentPatternIndex - badchar[text[shift + currentPatternIndex]]));
-            std::cout << "Shift by: " << shift << std::endl;
+
+            // TODO: remove this later
+            if (goodSuffixShiftTable[currentPatternIndex + 1] >= (currentPatternIndex - badchar[text[shift + currentPatternIndex]]))
+            {
+                std::cout << "Good suffix rule used, Shift to: " << shift << std::endl;
+            }
+            else
+            {
+                std::cout << "Bad character rule used, Shift to: " << shift << std::endl;
+            }
         }
     }
 
